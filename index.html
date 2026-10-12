@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Acamad - Building Solutions That Matter. We help businesses and founders turn challenges and ideas into practical and technology-driven solutions.">
+    <title>Acamad — Building Solutions That Matter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Noise texture overlay -->
+    <div class="noise-overlay"></div>
+
+    <!-- Navigation (persistent) -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-brand-group">
+            <a href="#" class="logo" id="logo-link">Acamad</a>
+        </div>
+        <ul class="nav-links" id="nav-links">
+            <li><a href="#" class="nav-link" data-view="about">ABOUT US</a></li>
+            <li><a href="#" class="nav-link" data-view="journey">OUR JOURNEY</a></li>
+            <li><a href="#" class="nav-link" data-view="movement">OUR MOVEMENT</a></li>
+            <li><a href="#" class="nav-link" data-view="tank">OUR INNOVATIONS</a></li>
+        </ul>
+        <button class="btn-consultation" id="btn-consultation" type="button">BOOK A CONSULTATION</button>
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <!-- ===== AMBIENT PARALLAX BACKGROUND WITH PARTING MESH ===== -->
+    <div class="bg-parallax" id="bg-parallax">
+        <!-- Deep portal background (revealed when mesh parts) -->
+        <div class="bg-layer bg-deep-base"></div>
+        <div class="bg-layer bg-portal-glow" id="bg-portal-glow"></div>
+
+        <!-- Parting Mesh Layer: Breaks in the middle & opens outward -->
+        <div class="mesh-portal" id="mesh-portal">
+            <div class="mesh-half mesh-left" id="mesh-left">
+                <div class="mesh-pattern"></div>
+                <div class="mesh-edge"></div>
+            </div>
+            <div class="mesh-half mesh-right" id="mesh-right">
+                <div class="mesh-pattern"></div>
+                <div class="mesh-edge"></div>
+            </div>
+        </div>
+
+        <!-- Subtle Living Dynamic Atmosphere Layer (Ethereal Particles & Twinkling Grid Nodes) -->
+        <canvas class="bg-dynamic-canvas" id="bg-dynamic-canvas" aria-hidden="true"></canvas>
+
+        <div class="bg-layer bg-vignette"></div>
+    </div>
+
+    <!-- ===== SHARED 3D LOGO SCULPTURE STAGE ===== -->
+    <div class="shared-sculpture-stage" id="shared-sculpture">
+        <div class="hero-emblem-wrapper" id="hero-emblem-wrapper">
+            <video 
+                class="hero-logo-video" 
+                id="hero-logo-video" 
+                autoplay 
+                loop 
+                muted 
+                playsinline 
+                preload="auto">
+                <source src="Files/logostatic_whole.webm" type="video/webm">
+                <source src="assets/logostatic_whole.webm" type="video/webm">
+            </video>
+
+            <!-- 1. HEAD Highlight Box (About Us) -->
+            <div class="sculpture-box box-head" id="box-head" data-view="about" role="button" tabindex="0" title="Click to view About Us" aria-label="Navigate to About Us">
+                <div class="target-tab">ABOUT US</div>
+                <div class="question-glyph">?</div>
+            </div>
+
+            <!-- 2. BODY Wave Highlight Box (Our Journey) -->
+            <div class="sculpture-box box-body" id="box-body" data-view="journey" role="button" tabindex="0" title="Click to view Our Journey" aria-label="Navigate to Our Journey">
+                <div class="target-tab">OUR JOURNEY</div>
+            </div>
+
+            <!-- 3. TAIL / FOOT Highlight Box (Our Movement) -->
+            <div class="sculpture-box box-tail" id="box-tail" data-view="movement" role="button" tabindex="0" title="Click to view Our Movement" aria-label="Navigate to Our Movement">
+                <div class="target-tab">OUR MOVEMENT</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== VIEW 1: HERO & HOME EXPERIENCE ===== -->
+    <section class="view view-hero active" id="view-hero">
+        <div class="home-scroll-container" id="home-scroll-container">
+            <!-- 1. Hero Content Section -->
+            <div class="hero-content-section" id="hero-content-section">
+                <div class="hero-content">
+                    <div class="hero-text" id="hero-text">
+                        <h1 class="hero-title">
+                            <span class="title-line">Building</span>
+                            <span class="title-line">Solutions</span>
+                            <span class="title-line">That Matter</span>
+                        </h1>
+                        <p class="hero-description">
+                            We help businesses and founders turn challenges and ideas into practical and technology-driven solutions.
+                        </p>
+                        <button class="btn-cta" id="btn-see-building" type="button">SEE WHAT WE'RE BUILDING</button>
+                    </div>
+                </div>
+
+                <!-- Subtle Scroll Cue at bottom of Hero -->
+                <div class="hero-scroll-cue" id="hero-scroll-cue">
+                    <span class="cue-label">HUMAN IN MOTION DETECTED. HOVER TO FIND OUT.</span>
+                    <span class="cue-arrow">&darr;</span>
+                </div>
+            </div>
+
+            <!-- 2. Home Problem Solving Section (Revealed on Scroll) -->
+            <div class="home-problem-section" id="home-problem-section">
+                <!-- Seamless Dark Phthalo Ambient Atmosphere (No White Light Wave) -->
+                <div class="home-problem-ambient" aria-hidden="true"></div>
+
+                <!-- Center Content: Problem Statement, CTA Button & Relocated Alliances -->
+                <div class="problem-center-content" id="problem-center-content">
+
+                    <h2 class="problem-title" id="problem-title">HAVE A PROBLEM THAT <br>NEEDS <span class="problem-title-highlight">SOLVING?</span></h2>
+                    
+                    <p class="problem-desc" id="problem-desc">
+                        Whether you need to improve an existing system, validate an idea, <br>or explore something new, let's start with the problem.
+                    </p>
+
+                    <div class="problem-cta-wrap" id="problem-cta-wrap">
+                        <button class="btn-problem-consultation" id="btn-problem-consultation" type="button">
+                            <span>BOOK A FREE CONSULTATION</span>
+                            <span class="arrow-glyph">&rarr;</span>
+                        </button>
+                    </div>
+
+                    <!-- Relocated Strategic Alliances: Elegant Trust Bar below CTA -->
+                    <div class="problem-alliances-band" id="problem-alliances-band">
+                        <span class="alliances-title">INCUBATION &amp; HARDWARE ALLIANCES</span>
+                        <div class="problem-partners-row">
+                            <div class="partner-logo-item" title="Animo Labs - Incubator & Research Partner">
+                                <img src="assets/partner-animo.png" alt="Animo Labs" class="partner-img animo-img">
+                            </div>
+                            <span class="alliances-sep"></span>
+                            <div class="partner-logo-item" title="Cytron Technologies - Hardware & IoT Partner">
+                                <img src="assets/partner-cytron.png" alt="Cytron Technologies" class="partner-img cytron-img">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Bar: Legacy Statement, Grand Watermark, & Social Links -->
+                <div class="problem-bottom-bar" id="problem-bottom-bar">
+                    <!-- Grand Watermark across the entire bottom (parallax enabled) -->
+                    <div class="watermark-brand-bg" id="watermark-brand-bg" aria-hidden="true">Acamad</div>
+
+                    <div class="legacy-text-col">
+                        <p class="legacy-quote">Where Legacy Starts with Vision</p>
+                    </div>
+
+                    <div class="social-links-col">
+                        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="social-link-item">
+                            <span>FACEBOOK</span>
+                            <span class="social-arrow">&#8599;</span>
+                        </a>
+                        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="social-link-item">
+                            <span>LINKEDIN</span>
+                            <span class="social-arrow">&#8599;</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== VIEW: ABOUT US ===== -->
+    <section class="view view-about" id="view-about">
+        <div class="view-container about-grid">
+            <!-- Dynamic SVG Connector Lines across about-grid -->
+            <svg class="about-lines-svg" id="about-lines-svg" preserveAspectRatio="none">
+                <!-- Line from WHO WE ARE card to Limitless -->
+                <line id="line-card-to-limitless" stroke="#ffffff" stroke-width="1.8" />
+                <!-- Stepped lines connecting Limitless -> Growth -> Zeal -->
+                <polyline id="polyline-stepped-badges" fill="none" stroke="#ffffff" stroke-width="1.8" />
+                <!-- Rise up to bottom frame -->
+                <line id="line-badges-to-runner-1" stroke="#ffffff" stroke-width="1.8" />
+                <line id="line-badges-to-runner-2" stroke="#ffffff" stroke-width="1.8" />
+                <!-- Line to top head highlight (stops cleanly at outer corner) -->
+                <line id="line-limitless-to-head" stroke="#ffffff" stroke-width="1.8" />
+            </svg>
+
+            <!-- Left Side: Card & Message -->
+            <div class="about-left-col">
+                <h2 class="section-title">WHO WE ARE</h2>
+                <div class="card-dual" id="about-card-dual">
+                    <div class="card-pane card-pane-dark">
+                        <p>We are an interdisciplinary research, development, and innovation startup initially founded in 2021. Rooted in education, robotics, and innovation, we develop solutions that turn meaningful ideas and problems into lasting impact.</p>
+                    </div>
+                    <div class="card-pane card-pane-light">
+                        <p class="in-2026-text">In 2026, we relaunched with a renewed focus on building impactful technologies and solutions for people and organizations.</p>
+                    </div>
+                </div>
+
+                <div class="founder-backstage-log" id="founder-backstage-log">
+                    <p class="log-title" id="hacker-log-title">[?] Presence of a backstage guy detected</p>
+                    <p class="log-msg" id="hacker-log-msg">Message: &ldquo;Where Legacy Starts With Vision&rdquo;</p>
+                </div>
+            </div>
+
+            <!-- Right Side: Wireframe Framing System -->
+            <div class="about-right-col" id="about-targeting-stage">
+                <!-- Lower Frame: Acamad Runner Silhouette -->
+                <div class="wireframe-target about-frame-bottom" id="about-frame-bottom">
+                    <img src="assets/runner-symbol.png" class="runner-symbol-img" alt="Acamad Runner Emblem">
+                </div>
+
+                <!-- Stepped Badges: Limitless, Growth, Zeal -->
+                <div class="stepped-badges-container" id="stepped-badges-container">
+                    <div class="step-badge badge-limitless" id="badge-limitless">Limitless</div>
+                    <div class="step-badge badge-growth" id="badge-growth">Growth</div>
+                    <div class="step-badge badge-zeal" id="badge-zeal">Zeal</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== VIEW: OUR JOURNEY ===== -->
+    <section class="view view-journey" id="view-journey">
+        <div class="view-container journey-layout">
+            <!-- Main Content Area: Seamless Story Card + Right Viewport -->
+            <div class="journey-main-row">
+                <div class="journey-left-col">
+                    <!-- Top Photo Gallery Carousel (Confined strictly to Story Box width, exactly 3 images visible, right-to-left) -->
+                    <div class="journey-carousel-viewport" id="journey-carousel-viewport">
+                        <div class="journey-carousel-track" id="journey-carousel-track">
+                            <!-- Group 1 -->
+                            <div class="carousel-group">
+                                <div class="gallery-photo-card" data-idx="1">
+                                    <span class="photo-corner photo-corner-tl"></span>
+                                    <span class="photo-corner photo-corner-tr"></span>
+                                    <span class="photo-corner photo-corner-bl"></span>
+                                    <span class="photo-corner photo-corner-br"></span>
+                                    <div class="photo-img-wrap">
+                                        <img src="assets/journey-award.jpg" alt="Technical Award at International Olympiad">
+                                    </div>
+                                    <div class="photo-card-tag">01 // OLYMPIAD AWARD</div>
+                                </div>
+                                <div class="gallery-photo-card" data-idx="2">
+                                    <span class="photo-corner photo-corner-tl"></span>
+                                    <span class="photo-corner photo-corner-tr"></span>
+                                    <span class="photo-corner photo-corner-bl"></span>
+                                    <span class="photo-corner photo-corner-br"></span>
+                                    <div class="photo-img-wrap">
+                                        <img src="assets/journey-trophy.jpg" alt="Fire Fighting Robot 1st Runner-Up Trophy">
+                                    </div>
+                                    <div class="photo-card-tag">02 // ROBOTICS TROPHY</div>
+                                </div>
+                                <div class="gallery-photo-card" data-idx="3">
+                                    <span class="photo-corner photo-corner-tl"></span>
+                                    <span class="photo-corner photo-corner-tr"></span>
+                                    <span class="photo-corner photo-corner-bl"></span>
+                                    <span class="photo-corner photo-corner-br"></span>
+                                    <div class="photo-img-wrap">
+                                        <img src="assets/journey-team.jpg" alt="DLSU Innovation & Robotics Team">
+                                    </div>
+                                    <div class="photo-card-tag">03 // DLSU RESEARCH TEAM</div>
+                                </div>
+                                <div class="gallery-photo-card" data-idx="4">
+                                    <span class="photo-corner photo-corner-tl"></span>
+                                    <span class="photo-corner photo-corner-tr"></span>
+                                    <span class="photo-corner photo-corner-bl"></span>
+                                    <span class="photo-corner photo-corner-br"></span>
+                                    <div class="photo-img-wrap">
+                                        <img src="assets/journey-hackathon.jpg" alt="Robotics & Hardware Laboratory">
+                                    </div>
+                                    <div class="photo-card-tag">04 // HARDWARE LAB</div>
+                                </div>
+                                <div class="gallery-photo-card" data-idx="5">
+                                    <span class="photo-corner photo-corner-tl"></span>
+                                    <span class="photo-corner photo-corner-tr"></span>
+                                    <span class="photo-corner photo-corner-bl"></span>
+                                    <span class="photo-corner photo-corner-br"></span>
+                                    <div class="photo-img-wrap">
+                                        <img src="assets/journey-prototype.jpg" alt="Autonomous Mobile Robot Prototype">
+                                    </div>
+                                    <div class="photo-card-tag">05 // AMR PROTOTYPE</div>
+                                </div>
+                                <div class="gallery-photo-card" data-idx="6">
+                                    <span class="photo-corner photo-corner-tl"></span>
+                                    <span class="photo-corner photo-corner-tr"></span>
+                                    <span class="photo-corner photo-corner-bl"></span>
+                                    <span class="photo-corner photo-corner-br"></span>
+                                    <div class="photo-img-wrap">
+                                        <img src="assets/journey-summit.jpg" alt="Keynote Innovation Symposium">
+                                    </div>
+                                    <div class="photo-card-tag">06 // TECH SYMPOSIUM</div>
+                                </div>
+                            </div>
+                            <!-- Group 2 (Continuous seamless clone) -->
+                            <div class="carousel-group" aria-hidden="true">
+                                <div class="gallery-photo-card" data-idx="1">
+                                    <span class="photo-corner photo-corner-tl"></span>
+                                    <span class="photo-corner photo-corner-tr"></span>
+                                    <span class="photo-corner photo-corner-bl"></span>
+                                    <span class="photo-corner photo-corner-br"></span>
+                                    <div class="photo-img-wrap">
+                                        <img src="assets/journey-award.jpg" alt="Technical Award at International Olympiad">
+                                    </div>
+                                    <div class="photo-card-tag">01 // OLYMPIAD AWARD</div>
+                                </div>
+                                <div class="gallery-photo-card" data-idx="2">
+                                    <span class="photo-corner photo-corner-tl"></span>
+                                    <span class="photo-corner photo-corner-tr"></span>
+                                    <span class="photo-corner photo-corner-bl"></span>
+                                    <span class="photo-corner photo-corner-br"></span>
+                                    <div class="photo-img-wrap">
+                                        <img src="assets/journey-trophy.jpg" alt="Fire Fighting Robot 1st Runner-Up Trophy">
+                                    </div>
+                                    <div class="photo-card-tag">02 // ROBOTICS TROPHY</div>
+                                </div>
+                                <div class="gallery-photo-card" data-idx="3">
+                                    <span class="photo-corner photo-corner-tl"></span>
+                                    <span class="photo-corner photo-corner-tr"></span>
+                                    <span class="photo-corner photo-corner-bl"></span>
+                                    <span class="photo-corner photo-corner-br"></span>
+                                    <div class="photo-img-wrap">
+                                        <img src="assets/journey-team.jpg" alt="DLSU Innovation & Robotics Team">
+                                    </div>
+                                    <div class="photo-card-tag">03 // DLSU RESEARCH TEAM</div>
+                                </div>
+                                <div class="gallery-photo-card" data-idx="4">
+                                    <span class="photo-corner photo-corner-tl"></span>
+                                    <span class="photo-corner photo-corner-tr"></span>
+                                    <span class="photo-corner photo-corner-bl"></span>
+                                    <span class="photo-corner photo-corner-br"></span>
+                                    <div class="photo-img-wrap">
+                                        <img src="assets/journey-hackathon.jpg" alt="Robotics & Hardware Laboratory">
+                                    </div>
+                                    <div class="photo-card-tag">04 // HARDWARE LAB</div>
+                                </div>
+                                <div class="gallery-photo-card" data-idx="5">
+                                    <span class="photo-corner photo-corner-tl"></span>
+                                    <span class="photo-corner photo-corner-tr"></span>
+                                    <span class="photo-corner photo-corner-bl"></span>
+                                    <span class="photo-corner photo-corner-br"></span>
+                                    <div class="photo-img-wrap">
+                                        <img src="assets/journey-prototype.jpg" alt="Autonomous Mobile Robot Prototype">
+                                    </div>
+                                    <div class="photo-card-tag">05 // AMR PROTOTYPE</div>
+                                </div>
+                                <div class="gallery-photo-card" data-idx="6">
+                                    <span class="photo-corner photo-corner-tl"></span>
+                                    <span class="photo-corner photo-corner-tr"></span>
+                                    <span class="photo-corner photo-corner-bl"></span>
+                                    <span class="photo-corner photo-corner-br"></span>
+                                    <div class="photo-img-wrap">
+                                        <img src="assets/journey-summit.jpg" alt="Keynote Innovation Symposium">
+                                    </div>
+                                    <div class="photo-card-tag">06 // TECH SYMPOSIUM</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2 class="section-title">THE ACAMAD STORY</h2>
+                    <div class="card-seamless-story" id="card-story">
+                        <ul class="story-list">
+                            <li>10+ Years &mdash; Robotics &amp; Innovation Experience</li>
+                            <li>Recognized locally and internationally in Innovation and Business</li>
+                            <li>Startup incubatee of DLSU Animo Labs since 2022</li>
+                            <li>5 years of collaborations with diverse industry partners</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Right Side: Reserved Column for Highlight Reticle on 3D Logo -->
+                <div class="journey-right-col" id="journey-targeting-stage" aria-hidden="true"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== VIEW: OUR MOVEMENT ===== -->
+    <section class="view view-movement" id="view-movement">
+        <div class="view-container movement-layout">
+            <div class="movement-left-col">
+                <h2 class="section-title">SERVICES</h2>
+                <div class="card-seamless-services" id="card-services">
+                    <div class="services-list-pane">
+                        <ul class="services-bullet-list">
+                            <li>Client-Based Solutions</li>
+                            <li>Startup Idea Validation &amp; Prototyping</li>
+                            <li>Research &amp; Development Support</li>
+                        </ul>
+                    </div>
+                    <!-- Interactive Dropdown Bar -->
+                    <div class="services-dropdown" id="services-dropdown">
+                        <button class="dropdown-trigger" id="dropdown-trigger" type="button" aria-expanded="false">
+                            <span class="dropdown-selected-label">What can we help you improve?</span>
+                            <span class="dropdown-caret">
+                                <svg width="12" height="8" viewBox="0 0 12 8" fill="currentColor"><polygon points="0,0 12,0 6,8"/></svg>
+                            </span>
+                        </button>
+                        <div class="dropdown-menu-list" id="dropdown-menu-list">
+                            <button type="button" class="dropdown-item" data-service="Client-Based Solutions">
+                                <strong>Client-Based Solutions</strong>
+                                <span>Custom web systems, automated workflows, and enterprise tools</span>
+                            </button>
+                            <button type="button" class="dropdown-item" data-service="Startup Idea Validation & Prototyping">
+                                <strong>Startup Idea Validation & Prototyping</strong>
+                                <span>Rapid MVP development, UI/UX architecture, and product testing</span>
+                            </button>
+                            <button type="button" class="dropdown-item" data-service="Research & Development Support">
+                                <strong>Research & Development Support</strong>
+                                <span>Robotics, IoT integration, and deep technology incubation</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Reserved Column for Highlight Reticle on 3D Logo -->
+            <div class="movement-right-col" id="movement-targeting-stage" aria-hidden="true"></div>
+        </div>
+    </section>
+
+
+
+    <!-- ===== VIEW 2: INNOVATION TANK ===== -->
+    <section class="view view-tank" id="view-tank">
+        <!-- Optical Focus Pattern (Centers user attention directly on Innovation Tank) -->
+        <div class="tank-focal-pattern" id="tank-focal-pattern" aria-hidden="true">
+            <!-- Dynamic ambient tech particle canvas -->
+            <canvas class="tank-particles-canvas" id="tank-particles-canvas"></canvas>
+
+            <svg class="focal-svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice">
+                <defs>
+                    <radialGradient id="focal-glow-rad" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="rgba(65, 88, 25, 0.48)" />
+                        <stop offset="35%" stop-color="rgba(35, 48, 14, 0.28)" />
+                        <stop offset="70%" stop-color="rgba(10, 15, 4, 0.05)" />
+                        <stop offset="100%" stop-color="transparent" />
+                    </radialGradient>
+                    <linearGradient id="ray-grad-tl" x1="100%" y1="100%" x2="0%" y2="0%">
+                        <stop offset="0%" stop-color="rgba(143, 163, 62, 0.28)" />
+                        <stop offset="70%" stop-color="rgba(143, 163, 62, 0.05)" />
+                        <stop offset="100%" stop-color="transparent" />
+                    </linearGradient>
+                    <linearGradient id="ray-grad-tr" x1="0%" y1="100%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="rgba(143, 163, 62, 0.28)" />
+                        <stop offset="70%" stop-color="rgba(143, 163, 62, 0.05)" />
+                        <stop offset="100%" stop-color="transparent" />
+                    </linearGradient>
+                    <linearGradient id="ray-grad-bl" x1="100%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="rgba(143, 163, 62, 0.28)" />
+                        <stop offset="70%" stop-color="rgba(143, 163, 62, 0.05)" />
+                        <stop offset="100%" stop-color="transparent" />
+                    </linearGradient>
+                    <linearGradient id="ray-grad-br" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="rgba(143, 163, 62, 0.28)" />
+                        <stop offset="70%" stop-color="rgba(143, 163, 62, 0.05)" />
+                        <stop offset="100%" stop-color="transparent" />
+                    </linearGradient>
+                </defs>
+
+                <!-- Dynamic Breathing Center Spotlight Glow -->
+                <circle class="focal-glow-circle" cx="700" cy="450" r="460" fill="url(#focal-glow-rad)" />
+
+                <!-- Static Base Focal Depth Rings -->
+                <circle cx="700" cy="450" r="190" fill="none" stroke="rgba(143, 163, 62, 0.15)" stroke-width="1" />
+                <circle cx="700" cy="450" r="410" fill="none" stroke="rgba(143, 163, 62, 0.12)" stroke-width="1" />
+
+                <!-- Dynamic Clockwise Orbiting Tech Ring -->
+                <g class="focal-group-rot-cw">
+                    <circle cx="700" cy="450" r="290" fill="none" stroke="rgba(143, 163, 62, 0.22)" stroke-width="1.2" stroke-dasharray="8 12 2 12" />
+                    <circle cx="700" cy="450" r="690" fill="none" stroke="rgba(143, 163, 62, 0.07)" stroke-width="1" stroke-dasharray="14 18 3 18" />
+                </g>
+
+                <!-- Dynamic Counter-Clockwise Orbiting Tech Ring -->
+                <g class="focal-group-rot-ccw">
+                    <circle cx="700" cy="450" r="550" fill="none" stroke="rgba(143, 163, 62, 0.14)" stroke-width="1" stroke-dasharray="12 16 3 16" />
+                </g>
+
+                <!-- Dynamic Expanding Optical Pulse Ripple -->
+                <circle class="focal-pulse-wave" cx="700" cy="450" r="230" fill="none" stroke="rgba(190, 220, 85, 0.28)" stroke-width="1.5" />
+
+                <!-- Converging Perspective Vanishing Rays (Lead user gaze straight to center) -->
+                <line x1="60" y1="60" x2="420" y2="330" stroke="url(#ray-grad-tl)" stroke-width="1.2" />
+                <line x1="1340" y1="60" x2="980" y2="330" stroke="url(#ray-grad-tr)" stroke-width="1.2" />
+                <line x1="60" y1="840" x2="420" y2="570" stroke="url(#ray-grad-bl)" stroke-width="1.2" />
+                <line x1="1340" y1="840" x2="980" y2="570" stroke="url(#ray-grad-br)" stroke-width="1.2" />
+
+                <!-- Lateral Horizon Guides with animated pulse -->
+                <line class="horizon-guide-line" x1="40" y1="450" x2="380" y2="450" stroke="url(#ray-grad-tl)" stroke-width="1" stroke-dasharray="6 8" />
+                <line class="horizon-guide-line" x1="1020" y1="450" x2="1360" y2="450" stroke="url(#ray-grad-tr)" stroke-width="1" stroke-dasharray="6 8" />
+
+                <!-- Focal Reticle Corner Brackets (Framing the middle tank zone) -->
+                <path class="focal-reticle" d="M 400,340 L 375,340 L 375,365" fill="none" stroke="rgba(190, 220, 85, 0.45)" stroke-width="1.5" />
+                <path class="focal-reticle" d="M 1000,340 L 1025,340 L 1025,365" fill="none" stroke="rgba(190, 220, 85, 0.45)" stroke-width="1.5" />
+                <path class="focal-reticle" d="M 400,560 L 375,560 L 375,535" fill="none" stroke="rgba(190, 220, 85, 0.45)" stroke-width="1.5" />
+                <path class="focal-reticle" d="M 1000,560 L 1025,560 L 1025,535" fill="none" stroke="rgba(190, 220, 85, 0.45)" stroke-width="1.5" />
+
+                <!-- Subtle Technical Calibration Ticks -->
+                <line x1="700" y1="220" x2="700" y2="236" stroke="rgba(143, 163, 62, 0.35)" stroke-width="1" />
+                <line x1="700" y1="664" x2="700" y2="680" stroke="rgba(143, 163, 62, 0.35)" stroke-width="1" />
+            </svg>
+        </div>
+
+        <div class="tank-view-inner">
+            <h2 class="tank-title" id="tank-title">IN OUR &ldquo;INNOVATION TANK&rdquo;</h2>
+
+            <div class="tank-stage" id="tank-stage">
+
+                <!-- Tank container (Original Design) -->
+                <div class="tank-center" id="tank-center">
+
+                    <!-- Top 3D Wireframe Perspective Frame (Roof of the tank system) -->
+                    <div class="tank-roof-frame">
+                        <svg class="roof-svg" viewBox="0 0 520 68" preserveAspectRatio="none">
+                            <polygon points="45,3 475,3 518,65 2,65" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="45" y1="3" x2="2" y2="65" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="475" y1="3" x2="518" y2="65" stroke="#ffffff" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+
+                    <!-- Layer: Digital Systems -->
+                    <div class="tank-layer" id="layer-digital" data-layer="digital">
+                        <button class="layer-toggle" data-target="digital" type="button">
+                            <span class="toggle-label">DIGITAL SYSTEMS</span>
+                            <span class="toggle-arrow">
+                                <svg width="12" height="8" viewBox="0 0 12 8" fill="currentColor"><polygon points="0,0 12,0 6,8"/></svg>
+                            </span>
+                        </button>
+                        <div class="layer-sublayers" id="sub-digital">
+                            <a href="#" class="sublayer-item" data-label="CUSTOMIZABLE QUOTATION GENERATOR - CRM" data-img="assets/crm-dashboard.jpg">
+                                <span>Track Your Sales Pipeline</span>
+                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 5L14 9L10 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </a>
+                            <a href="#" class="sublayer-item" data-label="E-COMMERCE PLATFORM" data-img="assets/ecommerce-dashboard.jpg">
+                                <span>Launch Your Online Store</span>
+                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 5L14 9L10 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </a>
+                            <a href="#" class="sublayer-item" data-label="INVENTORY & STORE REPORTS" data-img="assets/inventory-dashboard.jpg">
+                                <span>Centralize Inventory and Store Reports</span>
+                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 5L14 9L10 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Top 3D Wireframe Perspective Frame (Roof for Client Solution) -->
+                    <div class="tank-roof-frame">
+                        <svg class="roof-svg" viewBox="0 0 520 68" preserveAspectRatio="none">
+                            <polygon points="45,3 475,3 518,65 2,65" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="45" y1="3" x2="2" y2="65" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="475" y1="3" x2="518" y2="65" stroke="#ffffff" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+
+                    <!-- Layer: Client Solution (with matching trapezoid roof on top) -->
+                    <div class="tank-layer" id="layer-client" data-layer="client">
+                        <button class="layer-toggle" data-target="client" type="button">
+                            <span class="toggle-label">CLIENT SOLUTION</span>
+                            <span class="toggle-arrow">
+                                <svg width="12" height="8" viewBox="0 0 12 8" fill="currentColor"><polygon points="0,0 12,0 6,8"/></svg>
+                            </span>
+                        </button>
+                        <div class="layer-sublayers" id="sub-client">
+                            <a href="#" class="sublayer-item" data-label="ROBOTICS & INNOVATION TRAINING" data-img="assets/crm-dashboard.jpg">
+                                <span>Robotics & Innovation Training</span>
+                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 5L14 9L10 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </a>
+                            <a href="#" class="sublayer-item" data-label="CUSTOM ROBOTICS KIT" data-img="assets/ecommerce-dashboard.jpg">
+                                <span>Custom Robotics Kit</span>
+                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 5L14 9L10 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Preview panel (right side, hidden until a layer opens) -->
+                <div class="preview-panel" id="preview-panel">
+                    <p class="preview-label" id="preview-label">CUSTOMIZABLE QUOTATION GENERATOR - CRM</p>
+                    <div class="preview-frame">
+                        <span class="corner corner-tl"></span>
+                        <span class="corner corner-tr"></span>
+                        <span class="corner corner-bl"></span>
+                        <span class="corner corner-br"></span>
+                        <img id="preview-img" class="preview-img" src="assets/crm-dashboard.jpg" alt="Preview">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back button to return to hero -->
+            <button class="btn-back" id="btn-back" type="button">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M14 9H4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M8 5L4 9L8 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span>BACK</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- ===== CONSULTATION MODAL ===== -->
+    <div class="consultation-modal" id="consultation-modal" aria-hidden="true">
+        <div class="modal-backdrop" id="modal-backdrop"></div>
+        <div class="modal-window">
+            <button class="modal-close" id="modal-close" type="button" aria-label="Close modal">&times;</button>
+            <div class="modal-badge">ACAMAD STRATEGY & R&D</div>
+            <h3 class="modal-title">Book a Consultation</h3>
+            <p class="modal-desc">Share your idea, technical bottleneck, or project vision. We'll connect you directly with our engineering and research leads.</p>
+            <form class="consultation-form" id="consultation-form">
+                <div class="form-group">
+                    <label for="form-name">Name</label>
+                    <input type="text" id="form-name" placeholder="Your name or organization" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="form-email">Work Email</label>
+                        <input type="email" id="form-email" placeholder="name@company.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="form-phone">Contact Number</label>
+                        <input type="tel" id="form-phone" placeholder="+63 912 345 6789">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="form-service">Focus Area</label>
+                    <select id="form-service">
+                        <option value="client-based">Client-Based Solutions</option>
+                        <option value="prototyping">Startup Idea Validation & Prototyping</option>
+                        <option value="rd-support">Research & Development Support</option>
+                        <option value="innovation-tank">Innovation Tank Technologies</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="form-notes">What can we help you improve?</label>
+                    <textarea id="form-notes" rows="3" placeholder="Briefly describe your objectives or challenges..."></textarea>
+                </div>
+                <button type="submit" class="btn-submit-consultation" id="btn-submit-consultation">TRANSMIT REQUEST</button>
+                <div class="form-status" id="form-status"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- GSAP -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

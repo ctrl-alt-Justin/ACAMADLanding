@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 650" width="100%" height="100%">
+  <defs>
+    <!-- Soft diffuse drop shadow -->
+    <filter id="emboss-shadow" x="-30%" y="-30%" width="170%" height="170%">
+      <feDropShadow dx="-10" dy="25" stdDeviation="22" flood-color="#000000" flood-opacity="0.8" />
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#050702" flood-opacity="0.5" />
+    </filter>
+    
+    <!-- Deep organic olive gradient matching the reference background integration -->
+    <linearGradient id="emblem-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#24320e" />
+      <stop offset="45%" stop-color="#1b250a" />
+      <stop offset="100%" stop-color="#131b06" />
+    </linearGradient>
+
+    <!-- Subtle edge highlight for 3D depth -->
+    <linearGradient id="edge-glow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(143,163,62,0.22)" />
+      <stop offset="100%" stop-color="rgba(143,163,62,0.02)" />
+    </linearGradient>
+  </defs>
+
+  <g filter="url(#emboss-shadow)">
+    <!-- 1. Top Orb / Head -->
+    <circle cx="435" cy="165" r="82" fill="url(#emblem-grad)" stroke="url(#edge-glow)" stroke-width="1.5" />
+
+    <!-- 2. Dynamic Wave Ribbon -->
+    <path d="M 25,335 C 35,465 175,545 285,475 C 345,435 405,385 580,385 L 580,470 C 420,470 340,530 270,580 C 135,665 -15,535 25,335 Z" fill="url(#emblem-grad)" stroke="url(#edge-glow)" stroke-width="1.5" />
+
+    <!-- 3. Lower Diagonal Leg -->
+    <polygon points="320,445 425,380 575,600 480,645" fill="url(#emblem-grad)" stroke="url(#edge-glow)" stroke-width="1.5" />
+  </g>
+</svg>
