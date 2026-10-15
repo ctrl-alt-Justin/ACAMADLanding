@@ -920,7 +920,8 @@ function initConsultationModal() {
                     opacity: 1,
                     scale: 1,
                     duration: 0.38,
-                    ease: 'power2.out'
+                    ease: 'power2.out',
+                    clearProps: 'filter,opacity,scale'
                 });
 
                 if (typeof callback === 'function') callback();

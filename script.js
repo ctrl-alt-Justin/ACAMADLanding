@@ -689,8 +689,23 @@ function navigateToView(targetView, isImmediate = false) {
         });
         return;
     }
-    if (isAnimating && !isImmediate) return;
-    if (currentView === targetView && !isImmediate) return;
+    if (currentView === targetView && !isImmediate) {
+        if (targetView === 'hero' && viewHero) {
+            viewHero.scrollTo({ top: 0, behavior: 'smooth' });
+            currentScroll = 0;
+            targetScroll = 0;
+            if (typeof renderParallax === 'function') renderParallax(0);
+        }
+        return;
+    }
+
+    if (targetView === 'hero') {
+        gsap.set(['#home-problem-section', '#hero-scroll-cue', '#problem-center-content'], {
+            opacity: 1,
+            scale: 1,
+            clearProps: 'opacity,scale'
+        });
+    }
 
     // Update active nav-link highlighting
     $$('.nav-link').forEach(link => {
@@ -925,6 +940,11 @@ function switchBetweenStandardViews(fromView, toView) {
                 { opacity: 0, x: -35 }, 
                 { opacity: 1, x: 0, duration: 0.55, ease: 'power3.out', onComplete: updateMovementConnectorLines }, 0.28);
         } else if (toView === 'hero') {
+            gsap.set(['#home-problem-section', '#hero-scroll-cue', '#problem-center-content'], {
+                opacity: 1,
+                scale: 1,
+                clearProps: 'opacity,scale'
+            });
             gsap.set(['#view-hero', '#hero-text', '.title-line', '.hero-description', '.btn-cta'], {
                 filter: 'none',
                 clearProps: 'filter'
@@ -1149,6 +1169,11 @@ function doLeaveTankTo(targetView) {
             }
             updateSculptureHighlight(targetView);
             if (targetView === 'hero') {
+                gsap.set(['#home-problem-section', '#hero-scroll-cue', '#problem-center-content'], {
+                    opacity: 1,
+                    scale: 1,
+                    clearProps: 'opacity,scale'
+                });
                 const heroScrollEl = $('#view-hero');
                 if (heroScrollEl) {
                     heroScrollEl.scrollTo({ top: 0, behavior: 'instant' });
@@ -1376,8 +1401,15 @@ function initConsultationModal() {
         // Elements on screen to fade out so ONLY the ambient background is visible
         const pageElements = [
             '#view-hero', '#view-about', '#view-journey', '#view-movement', '#view-tank',
-            '#shared-sculpture', '#hero-scroll-cue', '#home-problem-section'
+            '#shared-sculpture'
         ];
+
+        // Ensure child elements inside hero remain fully opaque
+        gsap.set(['#home-problem-section', '#hero-scroll-cue', '#problem-center-content'], {
+            opacity: 1,
+            scale: 1,
+            clearProps: 'opacity,scale'
+        });
 
         // Phase 1: Fade out page contents
         gsap.to(pageElements, {
@@ -1447,20 +1479,23 @@ function initConsultationModal() {
                 closeAllDropdowns();
                 if (status) status.textContent = '';
 
-                // Restore page content of the current active view
+                // Restore page content
+                gsap.set(['#home-problem-section', '#hero-scroll-cue', '#problem-center-content'], {
+                    opacity: 1,
+                    scale: 1,
+                    clearProps: 'opacity,scale'
+                });
+
                 const activeViewId = window.currentView || currentView || 'hero';
                 const activeViewEl = $(`#view-${activeViewId}`);
                 const elementsToRestore = [activeViewEl, '#shared-sculpture'];
-                if (activeViewId === 'hero') {
-                    elementsToRestore.push('#hero-scroll-cue');
-                    elementsToRestore.push('#home-problem-section');
-                }
 
                 gsap.to(elementsToRestore, {
                     opacity: 1,
                     scale: 1,
                     duration: 0.38,
-                    ease: 'power2.out'
+                    ease: 'power2.out',
+                    clearProps: 'filter,opacity,scale'
                 });
 
                 if (typeof callback === 'function') callback();

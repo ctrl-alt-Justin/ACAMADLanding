@@ -1411,7 +1411,7 @@ body.inquiry-form-active #btn-consultation:hover {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: calc(var(--nav-h) + 10px) 60px 0;
+    padding: calc(var(--nav-h) + clamp(36px, 5.5vh, 65px)) 60px 0;
     box-sizing: border-box;
     overflow: hidden; /* No scrolling */
 }
@@ -1445,12 +1445,13 @@ body.inquiry-form-active #btn-consultation:hover {
     width: 100%;
     flex: 1;
     min-height: 0;
+    margin-top: clamp(6px, 1.5vh, 18px);
 }
 
 /* Left column: Title, description */
 .inquiry-left {
     flex: 0 0 clamp(300px, 32%, 420px);
-    padding-top: clamp(2px, 1.2vh, 16px);
+    padding-top: clamp(4px, 1.2vh, 16px);
 }
 
 .inquiry-title {
@@ -1869,7 +1870,8 @@ body:has(.consultation-fullpage.open) .navbar {
     align-items: flex-start;
     user-select: none;
     line-height: 0.72;
-    margin-bottom: clamp(-70px, -7vw, -120px);
+    /* Mirrored with main page footer: pulled downwards past bottom edge */
+    margin-bottom: clamp(-95px, -9vw, -160px);
 }
 
 .inquiry-legacy-quote {
@@ -1877,17 +1879,20 @@ body:has(.consultation-fullpage.open) .navbar {
 }
 
 .inquiry-watermark-logo {
-    width: clamp(440px, 48vw, 760px);
+    width: clamp(480px, 54vw, 860px);
     height: auto;
     aspect-ratio: 892 / 234;
     display: block;
+    /* Fade to white gradient matching light inquiry canvas */
     background: linear-gradient(
         180deg,
-        rgba(16, 26, 8, 0.98) 0%,
-        rgba(16, 26, 8, 0.98) 22%,
-        rgba(25, 38, 14, 0.8) 45%,
-        rgba(50, 72, 28, 0.4) 70%,
-        rgba(75, 105, 42, 0.12) 90%,
+        #171f07 0%,
+        #171f07 18%,
+        #2a381a 32%,
+        #5a6f44 48%,
+        #9ab283 64%,
+        #dbe6cf 80%,
+        #ffffff 92%,
         transparent 100%
     );
     -webkit-mask: url('companyassets/Footerlogo.png') no-repeat left top / contain;
@@ -2034,7 +2039,8 @@ body:has(.consultation-fullpage.open) .navbar {
     user-select: none;
     z-index: 5;
     line-height: 0.72;
-    margin-bottom: clamp(-75px, -7.5vw, -135px);
+    /* Brought down more: over 70% submerged below bottom edge */
+    margin-bottom: clamp(-95px, -9vw, -160px);
 }
 .watermark-brand-logo,
 .watermark-brand-bg {
@@ -2042,21 +2048,23 @@ body:has(.consultation-fullpage.open) .navbar {
     height: auto;
     aspect-ratio: 892 / 234;
     display: block;
+    /* Darkened fade-to-black gradient matching user request */
     background: linear-gradient(
         180deg,
-        #ffffff 0%,
-        #ffffff 20%,
-        #dce5d4 34%,
-        #829274 52%,
-        #2c3820 72%,
-        #080c05 92%,
+        #e2ebd8 0%,
+        #d0dec4 16%,
+        #9cae8e 30%,
+        #5a6b4c 48%,
+        #222c18 68%,
+        #070a04 86%,
         #000000 100%
     );
     -webkit-mask: url('companyassets/footerwhite.png') no-repeat left top / contain;
     mask: url('companyassets/footerwhite.png') no-repeat left top / contain;
     pointer-events: none;
     user-select: none;
-    filter: drop-shadow(0 4px 18px rgba(0, 0, 0, 0.7));
+    filter: drop-shadow(0 4px 18px rgba(0, 0, 0, 0.85));
+    opacity: 0.92;
 }
 .legacy-quote {
     display: none;
