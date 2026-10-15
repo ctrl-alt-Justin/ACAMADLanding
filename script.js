@@ -156,56 +156,200 @@ function updateAboutConnectorLines() {
     }
 }
 
+// Dynamic SVG Connector Lines for Our Journey
+function updateJourneyConnectorLines() {
+    const svg = $('#journey-lines-svg');
+    const card = $('#card-story');
+    const carousel = $('#journey-carousel-viewport');
+    const boxBody = $('#box-body');
+
+    if (!svg || !card || !boxBody) return;
+
+    const svgRect = svg.getBoundingClientRect();
+    if (svgRect.width === 0 || svgRect.height === 0) return;
+
+    const cardRect = card.getBoundingClientRect();
+    const bodyRect = boxBody.getBoundingClientRect();
+
+    // Single line from story card upper right to box-body middle-left edge
+    const lineStoryToBody = $('#line-story-to-body');
+    if (lineStoryToBody) {
+        lineStoryToBody.setAttribute('x1', Math.round(cardRect.right - svgRect.left));
+        lineStoryToBody.setAttribute('y1', Math.round((cardRect.top + 34) - svgRect.top));
+        lineStoryToBody.setAttribute('x2', Math.round(bodyRect.left - svgRect.left));
+        lineStoryToBody.setAttribute('y2', Math.round((bodyRect.top + bodyRect.height * 0.42) - svgRect.top));
+    }
+}
+
+// Dynamic SVG Connector Lines for Our Movement
+function updateMovementConnectorLines() {
+    const svg = $('#movement-lines-svg');
+    const card = $('#card-services');
+    const dropdown = $('#services-dropdown');
+    const boxTail = $('#box-tail');
+
+    if (!svg || !card || !boxTail) return;
+
+    const svgRect = svg.getBoundingClientRect();
+    if (svgRect.width === 0 || svgRect.height === 0) return;
+
+    const cardRect = card.getBoundingClientRect();
+    const tailRect = boxTail.getBoundingClientRect();
+
+    // Single line from SERVICES card upper right to top-left corner of box-tail
+    const lineServ = $('#line-services-to-tail');
+    if (lineServ) {
+        lineServ.setAttribute('x1', Math.round(cardRect.right - svgRect.left));
+        lineServ.setAttribute('y1', Math.round((cardRect.top + 45) - svgRect.top));
+        lineServ.setAttribute('x2', Math.round(tailRect.left - svgRect.left));
+        lineServ.setAttribute('y2', Math.round((tailRect.top + 16) - svgRect.top));
+    }
+}
+
+// Master helper to update active view connector lines
+function updateAllConnectorLines() {
+    if (currentView === 'about' || $('#view-about')?.classList.contains('active')) {
+        updateAboutConnectorLines();
+    }
+    if (currentView === 'journey' || $('#view-journey')?.classList.contains('active')) {
+        updateJourneyConnectorLines();
+    }
+    if (currentView === 'movement' || $('#view-movement')?.classList.contains('active')) {
+        updateMovementConnectorLines();
+    }
+}
+
 // -------------------------------------------------------
-// Techy Hacker Typewriter Effect for Backstage Log
 // -------------------------------------------------------
-let typewriterTimers = [];
-function runHackerTypewriter() {
+// Ambient Cyber Hacker Backstage Typewriter & Pushing Loop
+// -------------------------------------------------------
+let backstageTypewriterTimers = [];
+let backstageLoopTimer = null;
+
+function stopBackstageLoop() {
+    backstageTypewriterTimers.forEach(t => clearInterval(t));
+    backstageTypewriterTimers = [];
+    if (backstageLoopTimer) {
+        clearTimeout(backstageLoopTimer);
+        backstageLoopTimer = null;
+    }
+}
+
+function isAboutViewActive() {
+    const aboutEl = $('#view-about');
+    return currentView === 'about' || (aboutEl && aboutEl.classList.contains('active'));
+}
+
+function runBackstageLoop() {
+    stopBackstageLoop();
+
+    const container = $('#founder-backstage-log');
+    const line1 = $('#hacker-line-1');
+    const line2 = $('#hacker-line-2');
     const titleEl = $('#hacker-log-title');
     const msgEl = $('#hacker-log-msg');
-    const cursorEl = $('#hacker-cursor');
-    if (!titleEl || !msgEl) return;
+    const cursor1 = $('#hacker-cursor-1');
+    const cursor2 = $('#hacker-cursor-2');
 
-    typewriterTimers.forEach(t => clearInterval(t));
-    typewriterTimers = [];
+    if (!container || !line1 || !line2 || !titleEl || !msgEl) return;
 
     const fullTitle = "[?] Presence of a backstage guy detected";
-    const fullMsg = 'Message: "Where Legacy Starts With Vision"';
-    const scrambleChars = '!<>-_\\/[]{}—=+*^?#________';
+    const fullMsg = "Where legacy starts with vision";
+    const scrambleChars = '!<>-_\\/[]{}—=+*^?#01';
+
+    // Step 1: Initial state — only line 1 is visible at baseline, line 2 is hidden & collapsed
+    gsap.killTweensOf([container, line1, line2]);
+    gsap.set(container, { opacity: 1 });
+    gsap.set(line1, { opacity: 1, y: 0 });
+    gsap.set(line2, { opacity: 0, height: 0, overflow: 'hidden', y: 8, marginTop: 0 });
+    if (cursor1) cursor1.style.display = 'inline-block';
+    if (cursor2) cursor2.style.display = 'none';
 
     titleEl.textContent = '';
     msgEl.textContent = '';
-    if (cursorEl) cursorEl.style.display = 'inline-block';
 
+    // Type out Line 1
     let tIndex = 0;
-    const titleTimer = setInterval(() => {
+    const tTimer = setInterval(() => {
+        if (!isAboutViewActive()) {
+            clearInterval(tTimer);
+            return;
+        }
+
         if (tIndex <= fullTitle.length) {
             const confirmed = fullTitle.substring(0, tIndex);
             const glitch = (tIndex < fullTitle.length) ? scrambleChars[Math.floor(Math.random() * scrambleChars.length)] : '';
             titleEl.textContent = confirmed + glitch;
             tIndex++;
         } else {
-            clearInterval(titleTimer);
+            clearInterval(tTimer);
             titleEl.textContent = fullTitle;
+            if (cursor1) cursor1.style.display = 'none';
 
-            // Start typing message
-            let mIndex = 0;
-            const msgTimer = setInterval(() => {
-                if (mIndex <= fullMsg.length) {
-                    const confirmed = fullMsg.substring(0, mIndex);
-                    const glitch = (mIndex < fullMsg.length) ? scrambleChars[Math.floor(Math.random() * scrambleChars.length)] : '';
-                    msgEl.textContent = confirmed + glitch;
-                    mIndex++;
-                } else {
-                    clearInterval(msgTimer);
-                    msgEl.textContent = fullMsg;
-                }
-            }, 28);
-            typewriterTimers.push(msgTimer);
+            // Hold Line 1 alone for 1.8 seconds
+            backstageLoopTimer = setTimeout(() => {
+                if (!isAboutViewActive()) return;
+
+                // Step 2: Line 2 appears underneath, pushing Line 1 UPWARDS!
+                if (cursor2) cursor2.style.display = 'inline-block';
+                
+                gsap.to(line2, {
+                    height: 'auto',
+                    marginTop: 6,
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.45,
+                    ease: 'power2.out',
+                    onComplete: () => {
+                        // Type out Line 2 with scramble decoding
+                        let mIndex = 0;
+                        const mTimer = setInterval(() => {
+                            if (!isAboutViewActive()) {
+                                clearInterval(mTimer);
+                                return;
+                            }
+
+                            if (mIndex <= fullMsg.length) {
+                                const confirmed = fullMsg.substring(0, mIndex);
+                                const glitch = (mIndex < fullMsg.length) ? scrambleChars[Math.floor(Math.random() * scrambleChars.length)] : '';
+                                msgEl.textContent = confirmed + glitch;
+                                mIndex++;
+                            } else {
+                                clearInterval(mTimer);
+                                msgEl.textContent = fullMsg;
+
+                                // Step 3: Hold both lines for 2.8 seconds
+                                backstageLoopTimer = setTimeout(() => {
+                                    if (!isAboutViewActive()) return;
+
+                                    // Step 4: Both lines fade out smoothly
+                                    gsap.to(container, {
+                                        opacity: 0,
+                                        duration: 0.65,
+                                        ease: 'power2.in',
+                                        onComplete: () => {
+                                            // Step 5: Brief pause, then first line shows again creating the loop!
+                                            backstageLoopTimer = setTimeout(() => {
+                                                if (isAboutViewActive()) {
+                                                    runBackstageLoop();
+                                                }
+                                            }, 700);
+                                        }
+                                    });
+                                }, 2800);
+                            }
+                        }, 22);
+                        backstageTypewriterTimers.push(mTimer);
+                    }
+                });
+            }, 1800);
         }
-    }, 24);
-    typewriterTimers.push(titleTimer);
+    }, 20);
+    backstageTypewriterTimers.push(tTimer);
 }
+
+// Alias for view transitions
+const runHackerTypewriter = runBackstageLoop;
 
 // -------------------------------------------------------
 // -------------------------------------------------------
@@ -334,7 +478,7 @@ function initHomeScrollParallax() {
     window.addEventListener('wheel', (e) => {
         if (currentView !== 'hero') return;
         if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target?.tagName)) return;
-        if (e.target?.closest('.consultation-modal')) return;
+        if (e.target?.closest('.consultation-fullpage')) return;
 
         e.preventDefault();
 
@@ -404,6 +548,17 @@ function initHomeScrollParallax() {
         });
     }
 
+    // 5. Connect footer Gmail button (mobile fallback to mailto:)
+    const gmailFooterBtn = $('#footer-gmail-btn');
+    if (gmailFooterBtn) {
+        gmailFooterBtn.addEventListener('click', (e) => {
+            if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                e.preventDefault();
+                window.location.href = 'mailto:acamad.technologies@gmail.com';
+            }
+        });
+    }
+
     // Expose reset / jump helper for view transitions
     window.resetHeroSmoothScroll = () => {
         targetScroll = 0;
@@ -436,8 +591,11 @@ document.addEventListener('DOMContentLoaded', () => {
     playAllVideos();
     updateSculptureHighlight(currentView);
     document.addEventListener('click', playAllVideos, { once: true });
-    window.addEventListener('resize', updateAboutConnectorLines);
-    setTimeout(updateAboutConnectorLines, 100);
+    window.addEventListener('resize', updateAllConnectorLines);
+    setTimeout(updateAllConnectorLines, 100);
+    if (currentView === 'about' || $('#view-about')?.classList.contains('active')) {
+        runBackstageLoop();
+    }
 
     btnCTA.addEventListener('click', () => navigateToView('tank'));
     btnBack.addEventListener('click', () => navigateToView('hero'));
@@ -525,6 +683,12 @@ function initNavigation() {
 }
 
 function navigateToView(targetView, isImmediate = false) {
+    if (window.isConsultationOpen && window.closeConsultationModal) {
+        window.closeConsultationModal(() => {
+            navigateToView(targetView, isImmediate);
+        });
+        return;
+    }
     if (isAnimating && !isImmediate) return;
     if (currentView === targetView && !isImmediate) return;
 
@@ -578,6 +742,8 @@ function navigateToView(targetView, isImmediate = false) {
         }
         updateSculptureHighlight(targetView);
         if (targetView === 'about') setTimeout(updateAboutConnectorLines, 50);
+        if (targetView === 'journey') setTimeout(updateJourneyConnectorLines, 50);
+        if (targetView === 'movement') setTimeout(updateMovementConnectorLines, 50);
         playAllVideos();
         currentView = targetView;
         return;
@@ -643,6 +809,7 @@ function initMobileNav() {
 // -------------------------------------------------------
 function switchBetweenStandardViews(fromView, toView) {
     isAnimating = true;
+    currentView = toView;
     const fromEl = $(`#view-${fromView}`);
     const toEl   = $(`#view-${toView}`);
 
@@ -661,6 +828,8 @@ function switchBetweenStandardViews(fromView, toView) {
             playAllVideos();
             currentView = toView;
             if (toView === 'about') updateAboutConnectorLines();
+            if (toView === 'journey') updateJourneyConnectorLines();
+            if (toView === 'movement') updateMovementConnectorLines();
             isAnimating = false;
         }
     });
@@ -673,6 +842,10 @@ function switchBetweenStandardViews(fromView, toView) {
         duration: 0.4,
         ease: 'power2.out',
     }, 0.1);
+
+    if (fromView === 'about') {
+        stopBackstageLoop();
+    }
 
     if (fromView === 'hero') {
         const heroText = $('#hero-text');
@@ -723,9 +896,6 @@ function switchBetweenStandardViews(fromView, toView) {
               .fromTo('#view-about .card-dual', 
                 { opacity: 0, x: -35 }, 
                 { opacity: 1, x: 0, duration: 0.55, ease: 'power3.out' }, 0.28)
-              .fromTo('#view-about .founder-backstage-log', 
-                { opacity: 0, y: 20 }, 
-                { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 0.38)
               .fromTo('#view-about .about-lines-svg', 
                 { opacity: 0 }, 
                 { opacity: 1, duration: 0.6, ease: 'power2.out' }, 0.32)
@@ -736,16 +906,24 @@ function switchBetweenStandardViews(fromView, toView) {
                 { opacity: 0, y: 15 }, 
                 { opacity: 1, y: 0, duration: 0.4, stagger: 0.08, ease: 'power2.out', onComplete: updateAboutConnectorLines }, 0.4);
         } else if (toView === 'journey') {
-            tl.fromTo('#view-journey .gallery-photo-card', 
+            tl.call(updateJourneyConnectorLines, null, 0.24)
+              .fromTo('#view-journey .journey-lines-svg', 
+                { opacity: 0 }, 
+                { opacity: 1, duration: 0.6, ease: 'power2.out' }, 0.32)
+              .fromTo('#view-journey .gallery-photo-card', 
                 { opacity: 0, y: -20, scale: 0.95 }, 
                 { opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.04, ease: 'power3.out' }, 0.28)
               .fromTo('#view-journey .card-seamless-story', 
                 { opacity: 0, x: -35 }, 
-                { opacity: 1, x: 0, duration: 0.55, ease: 'power3.out' }, 0.35);
+                { opacity: 1, x: 0, duration: 0.55, ease: 'power3.out', onComplete: updateJourneyConnectorLines }, 0.35);
         } else if (toView === 'movement') {
-            tl.fromTo('#view-movement .card-seamless-services', 
+            tl.call(updateMovementConnectorLines, null, 0.24)
+              .fromTo('#view-movement .movement-lines-svg', 
+                { opacity: 0 }, 
+                { opacity: 1, duration: 0.6, ease: 'power2.out' }, 0.32)
+              .fromTo('#view-movement .card-seamless-services', 
                 { opacity: 0, x: -35 }, 
-                { opacity: 1, x: 0, duration: 0.55, ease: 'power3.out' }, 0.28);
+                { opacity: 1, x: 0, duration: 0.55, ease: 'power3.out', onComplete: updateMovementConnectorLines }, 0.28);
         } else if (toView === 'hero') {
             gsap.set(['#view-hero', '#hero-text', '.title-line', '.hero-description', '.btn-cta'], {
                 filter: 'none',
@@ -1054,11 +1232,14 @@ function doLeaveTankTo(targetView) {
               duration: 0.7,
               ease: 'power3.out',
           }, 0.9);
+        if (targetView === 'about') {
+            tl.call(runBackstageLoop, null, 0.9);
+        }
     }
 }
 
 // -------------------------------------------------------
-// OUR MOVEMENT: Services Interactive Dropdown
+// OUR MOVEMENT: Services Interactive Dropdown (Informational)
 // -------------------------------------------------------
 function initMovementDropdown() {
     const trigger = $('#dropdown-trigger');
@@ -1067,34 +1248,40 @@ function initMovementDropdown() {
     if (!trigger || !menu) return;
 
     trigger.addEventListener('click', (e) => {
+        e.preventDefault();
         e.stopPropagation();
         const isOpen = menu.classList.toggle('open');
         trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        menu.style.display = isOpen ? 'flex' : 'none';
     });
 
     $$('.dropdown-item').forEach(item => {
         item.addEventListener('click', (e) => {
+            e.preventDefault();
             e.stopPropagation();
             const serviceName = item.dataset.service;
-            if (label) label.textContent = serviceName;
-            menu.classList.remove('open');
-            trigger.setAttribute('aria-expanded', 'false');
-
-            // Open consultation modal pre-selected to this service
-            if (window.openConsultationModal) {
-                window.openConsultationModal(serviceName);
+            if (label && serviceName) {
+                label.textContent = serviceName;
             }
+            $$('.dropdown-item').forEach(i => i.classList.remove('selected'));
+            item.classList.add('selected');
+            menu.classList.remove('open');
+            menu.style.display = 'none';
+            trigger.setAttribute('aria-expanded', 'false');
         });
     });
 
-    document.addEventListener('click', () => {
-        menu.classList.remove('open');
-        trigger.setAttribute('aria-expanded', 'false');
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('#services-dropdown')) {
+            menu.classList.remove('open');
+            menu.style.display = 'none';
+            trigger.setAttribute('aria-expanded', 'false');
+        }
     });
 }
 
 // -------------------------------------------------------
-// CONSULTATION MODAL CONTROLLER
+// CONSULTATION MODAL CONTROLLER (Full-Page Inquiry Form)
 // -------------------------------------------------------
 function initConsultationModal() {
     const modal         = $('#consultation-modal');
@@ -1103,36 +1290,199 @@ function initConsultationModal() {
     const backdrop      = $('#modal-backdrop');
     const form          = $('#consultation-form');
     const status        = $('#form-status');
-    const serviceSelect = $('#form-service');
 
     if (!modal) return;
 
+    // Custom Dropdowns matching website dark olive theme
+    const customSelects = modal.querySelectorAll('.custom-select');
+    customSelects.forEach(dropdown => {
+        const trigger = dropdown.querySelector('.custom-select-trigger');
+        const valueDisplay = dropdown.querySelector('.custom-select-value');
+        const hiddenInput = dropdown.querySelector('input[type="hidden"]');
+        const optionItems = dropdown.querySelectorAll('.custom-select-option');
+        const parentRow = dropdown.closest('.inquiry-row');
+
+        if (!trigger) return;
+
+        trigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const isOpen = dropdown.classList.contains('open');
+            // Close all other dropdowns
+            customSelects.forEach(d => {
+                if (d !== dropdown) {
+                    d.classList.remove('open');
+                    d.querySelector('.custom-select-trigger')?.setAttribute('aria-expanded', 'false');
+                    d.closest('.inquiry-row')?.classList.remove('has-open-select');
+                }
+            });
+
+            if (isOpen) {
+                dropdown.classList.remove('open');
+                trigger.setAttribute('aria-expanded', 'false');
+                if (parentRow) parentRow.classList.remove('has-open-select');
+            } else {
+                dropdown.classList.add('open');
+                trigger.setAttribute('aria-expanded', 'true');
+                if (parentRow) parentRow.classList.add('has-open-select');
+            }
+        });
+
+        optionItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const val = item.getAttribute('data-value');
+                if (valueDisplay) valueDisplay.textContent = val;
+                if (hiddenInput) hiddenInput.value = val;
+
+                optionItems.forEach(opt => opt.classList.remove('selected'));
+                item.classList.add('selected');
+
+                dropdown.classList.remove('open');
+                trigger.setAttribute('aria-expanded', 'false');
+                if (parentRow) parentRow.classList.remove('has-open-select');
+            });
+        });
+    });
+
+    // Close any open custom dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.custom-select')) {
+            customSelects.forEach(d => {
+                d.classList.remove('open');
+                d.querySelector('.custom-select-trigger')?.setAttribute('aria-expanded', 'false');
+                d.closest('.inquiry-row')?.classList.remove('has-open-select');
+            });
+        }
+    });
+
+    const closeAllDropdowns = () => {
+        customSelects.forEach(d => {
+            d.classList.remove('open');
+            d.querySelector('.custom-select-trigger')?.setAttribute('aria-expanded', 'false');
+            d.closest('.inquiry-row')?.classList.remove('has-open-select');
+        });
+    };
+
     window.openConsultationModal = (service) => {
-        modal.classList.add('open');
-        modal.setAttribute('aria-hidden', 'false');
-        if (service && serviceSelect) {
-            for (let opt of serviceSelect.options) {
-                if (opt.text.toLowerCase().includes(service.toLowerCase()) || 
-                    service.toLowerCase().includes(opt.text.toLowerCase())) {
-                    serviceSelect.value = opt.value;
-                    break;
+        if (window.isConsultationOpen) {
+            window.closeConsultationModal();
+            return;
+        }
+        window.isConsultationOpen = true;
+
+        // Elements on screen to fade out so ONLY the ambient background is visible
+        const pageElements = [
+            '#view-hero', '#view-about', '#view-journey', '#view-movement', '#view-tank',
+            '#shared-sculpture', '#hero-scroll-cue', '#home-problem-section'
+        ];
+
+        // Phase 1: Fade out page contents
+        gsap.to(pageElements, {
+            opacity: 0,
+            scale: 0.98,
+            duration: 0.32,
+            ease: 'power2.inOut',
+            onComplete: () => {
+                // Phase 2: Fade to white / negative TV wash & show inquiry form
+                modal.classList.add('open');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+                document.body.classList.add('inquiry-form-active');
+
+                // Animate backdrop white wash
+                gsap.fromTo(backdrop, 
+                    { opacity: 0 }, 
+                    { opacity: 1, duration: 0.45, ease: 'power2.out' }
+                );
+
+                // Phase 3: Animate form container smoothly in
+                gsap.fromTo('.consultation-fullpage-inner',
+                    { opacity: 0, y: 24 },
+                    { opacity: 1, y: 0, duration: 0.45, delay: 0.12, ease: 'power2.out' }
+                );
+            }
+        });
+
+        // If a specific service was passed, select it in Operations To Improve
+        if (service) {
+            const opsSelect = $('#custom-select-operations');
+            if (opsSelect) {
+                const targetOpt = Array.from(opsSelect.querySelectorAll('.custom-select-option'))
+                    .find(opt => opt.getAttribute('data-value').toLowerCase().includes(service.toLowerCase()));
+                if (targetOpt) {
+                    targetOpt.click();
                 }
             }
         }
     };
 
-    const closeModal = () => {
-        modal.classList.remove('open');
-        modal.setAttribute('aria-hidden', 'true');
-        if (status) status.textContent = '';
+    window.closeConsultationModal = (callback) => {
+        if (!window.isConsultationOpen) {
+            if (typeof callback === 'function') callback();
+            return;
+        }
+        window.isConsultationOpen = false;
+
+        // Fade out inquiry form and backdrop
+        gsap.to('.consultation-fullpage-inner', {
+            opacity: 0,
+            y: -16,
+            duration: 0.22,
+            ease: 'power2.in'
+        });
+
+        gsap.to(backdrop, {
+            opacity: 0,
+            duration: 0.32,
+            delay: 0.05,
+            ease: 'power2.inOut',
+            onComplete: () => {
+                modal.classList.remove('open');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('inquiry-form-active');
+                document.body.style.overflow = '';
+                closeAllDropdowns();
+                if (status) status.textContent = '';
+
+                // Restore page content of the current active view
+                const activeViewId = window.currentView || currentView || 'hero';
+                const activeViewEl = $(`#view-${activeViewId}`);
+                const elementsToRestore = [activeViewEl, '#shared-sculpture'];
+                if (activeViewId === 'hero') {
+                    elementsToRestore.push('#hero-scroll-cue');
+                    elementsToRestore.push('#home-problem-section');
+                }
+
+                gsap.to(elementsToRestore, {
+                    opacity: 1,
+                    scale: 1,
+                    duration: 0.38,
+                    ease: 'power2.out'
+                });
+
+                if (typeof callback === 'function') callback();
+            }
+        });
     };
 
-    if (openBtn) openBtn.addEventListener('click', () => window.openConsultationModal());
+    const closeModal = () => window.closeConsultationModal();
+
+    if (openBtn) openBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (window.isConsultationOpen) {
+            window.closeConsultationModal();
+        } else {
+            window.openConsultationModal();
+        }
+    });
     if (closeBtn) closeBtn.addEventListener('click', closeModal);
     if (backdrop) backdrop.addEventListener('click', closeModal);
 
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('open')) {
+        if (e.key === 'Escape' && window.isConsultationOpen) {
             closeModal();
         }
     });
@@ -1140,9 +1490,10 @@ function initConsultationModal() {
     if (form) {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
-            const name = $('#form-name').value;
-            status.textContent = `Thank you, ${name}. Request received. Our engineering lead will contact you promptly.`;
-            status.style.color = '#beea64';
+            const name = $('#form-name')?.value || 'Client';
+            status.textContent = `Thank you, ${name}. Your inquiry has been received. Our team will contact you shortly.`;
+            status.style.color = '#202c13';
+            status.style.fontWeight = '600';
             setTimeout(() => {
                 closeModal();
                 form.reset();
@@ -1503,6 +1854,10 @@ function initTankParticles() {
 
     let time = 0;
     function animate() {
+        if (window.isConsultationOpen) {
+            requestAnimationFrame(animate);
+            return;
+        }
         if (currentView === 'tank') {
             ctx.clearRect(0, 0, width, height);
             time += 0.02;
@@ -1604,6 +1959,12 @@ function initBackgroundDynamic() {
 
     let time = 0;
     function animate() {
+        // Freeze canvas animations when consultation modal is open
+        if (window.isConsultationOpen) {
+            requestAnimationFrame(animate);
+            return;
+        }
+
         // Pause drawing when user is inside the Innovation Tank (which has its own canvas)
         if (window.currentView === 'tank') {
             requestAnimationFrame(animate);

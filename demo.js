@@ -269,6 +269,12 @@ function initNavigation() {
 }
 
 function navigateToView(targetView, isImmediate = false) {
+    if (window.isConsultationOpen && window.closeConsultationModal) {
+        window.closeConsultationModal(() => {
+            navigateToView(targetView, isImmediate);
+        });
+        return;
+    }
     if (isAnimating && !isImmediate) return;
     if (currentView === targetView && !isImmediate) return;
 
@@ -697,7 +703,7 @@ function doLeaveTankTo(targetView) {
 }
 
 // -------------------------------------------------------
-// OUR MOVEMENT: Services Interactive Dropdown
+// OUR MOVEMENT: Services Interactive Dropdown (Informational)
 // -------------------------------------------------------
 function initMovementDropdown() {
     const trigger = $('#dropdown-trigger');
@@ -706,29 +712,35 @@ function initMovementDropdown() {
     if (!trigger || !menu) return;
 
     trigger.addEventListener('click', (e) => {
+        e.preventDefault();
         e.stopPropagation();
         const isOpen = menu.classList.toggle('open');
         trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        menu.style.display = isOpen ? 'flex' : 'none';
     });
 
     $$('.dropdown-item').forEach(item => {
         item.addEventListener('click', (e) => {
+            e.preventDefault();
             e.stopPropagation();
             const serviceName = item.dataset.service;
-            if (label) label.textContent = serviceName;
-            menu.classList.remove('open');
-            trigger.setAttribute('aria-expanded', 'false');
-
-            // Open consultation modal pre-selected to this service
-            if (window.openConsultationModal) {
-                window.openConsultationModal(serviceName);
+            if (label && serviceName) {
+                label.textContent = serviceName;
             }
+            $$('.dropdown-item').forEach(i => i.classList.remove('selected'));
+            item.classList.add('selected');
+            menu.classList.remove('open');
+            menu.style.display = 'none';
+            trigger.setAttribute('aria-expanded', 'false');
         });
     });
 
-    document.addEventListener('click', () => {
-        menu.classList.remove('open');
-        trigger.setAttribute('aria-expanded', 'false');
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('#services-dropdown')) {
+            menu.classList.remove('open');
+            menu.style.display = 'none';
+            trigger.setAttribute('aria-expanded', 'false');
+        }
     });
 }
 
@@ -742,36 +754,195 @@ function initConsultationModal() {
     const backdrop      = $('#modal-backdrop');
     const form          = $('#consultation-form');
     const status        = $('#form-status');
-    const serviceSelect = $('#form-service');
 
     if (!modal) return;
 
+    // Custom Dropdowns matching website dark olive theme
+    const customSelects = modal.querySelectorAll('.custom-select');
+    customSelects.forEach(dropdown => {
+        const trigger = dropdown.querySelector('.custom-select-trigger');
+        const valueDisplay = dropdown.querySelector('.custom-select-value');
+        const hiddenInput = dropdown.querySelector('input[type="hidden"]');
+        const optionItems = dropdown.querySelectorAll('.custom-select-option');
+        const parentRow = dropdown.closest('.inquiry-row');
+
+        if (!trigger) return;
+
+        trigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const isOpen = dropdown.classList.contains('open');
+            // Close all other dropdowns
+            customSelects.forEach(d => {
+                if (d !== dropdown) {
+                    d.classList.remove('open');
+                    d.querySelector('.custom-select-trigger')?.setAttribute('aria-expanded', 'false');
+                    d.closest('.inquiry-row')?.classList.remove('has-open-select');
+                }
+            });
+
+            if (isOpen) {
+                dropdown.classList.remove('open');
+                trigger.setAttribute('aria-expanded', 'false');
+                if (parentRow) parentRow.classList.remove('has-open-select');
+            } else {
+                dropdown.classList.add('open');
+                trigger.setAttribute('aria-expanded', 'true');
+                if (parentRow) parentRow.classList.add('has-open-select');
+            }
+        });
+
+        optionItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const val = item.getAttribute('data-value');
+                if (valueDisplay) valueDisplay.textContent = val;
+                if (hiddenInput) hiddenInput.value = val;
+
+                optionItems.forEach(opt => opt.classList.remove('selected'));
+                item.classList.add('selected');
+
+                dropdown.classList.remove('open');
+                trigger.setAttribute('aria-expanded', 'false');
+                if (parentRow) parentRow.classList.remove('has-open-select');
+            });
+        });
+    });
+
+    // Close any open custom dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.custom-select')) {
+            customSelects.forEach(d => {
+                d.classList.remove('open');
+                d.querySelector('.custom-select-trigger')?.setAttribute('aria-expanded', 'false');
+                d.closest('.inquiry-row')?.classList.remove('has-open-select');
+            });
+        }
+    });
+
+    const closeAllDropdowns = () => {
+        customSelects.forEach(d => {
+            d.classList.remove('open');
+            d.querySelector('.custom-select-trigger')?.setAttribute('aria-expanded', 'false');
+            d.closest('.inquiry-row')?.classList.remove('has-open-select');
+        });
+    };
+
     window.openConsultationModal = (service) => {
-        modal.classList.add('open');
-        modal.setAttribute('aria-hidden', 'false');
-        if (service && serviceSelect) {
-            for (let opt of serviceSelect.options) {
-                if (opt.text.toLowerCase().includes(service.toLowerCase()) || 
-                    service.toLowerCase().includes(opt.text.toLowerCase())) {
-                    serviceSelect.value = opt.value;
-                    break;
+        if (window.isConsultationOpen) {
+            window.closeConsultationModal();
+            return;
+        }
+        window.isConsultationOpen = true;
+
+        // Elements on screen to fade out so ONLY the ambient background is visible
+        const pageElements = [
+            '#view-hero', '#view-about', '#view-journey', '#view-movement', '#view-tank',
+            '#shared-sculpture'
+        ];
+
+        // Phase 1: Fade out page contents
+        gsap.to(pageElements, {
+            opacity: 0,
+            scale: 0.98,
+            duration: 0.32,
+            ease: 'power2.inOut',
+            onComplete: () => {
+                // Phase 2: Fade to white / negative TV wash & show inquiry form
+                modal.classList.add('open');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+                document.body.classList.add('inquiry-form-active');
+
+                // Animate backdrop white wash
+                gsap.fromTo(backdrop, 
+                    { opacity: 0 }, 
+                    { opacity: 1, duration: 0.45, ease: 'power2.out' }
+                );
+
+                // Phase 3: Animate form container smoothly in
+                gsap.fromTo('.consultation-fullpage-inner',
+                    { opacity: 0, y: 24 },
+                    { opacity: 1, y: 0, duration: 0.45, delay: 0.12, ease: 'power2.out' }
+                );
+            }
+        });
+
+        // If a specific service was passed, select it in Operations To Improve
+        if (service) {
+            const opsSelect = $('#custom-select-operations');
+            if (opsSelect) {
+                const targetOpt = Array.from(opsSelect.querySelectorAll('.custom-select-option'))
+                    .find(opt => opt.getAttribute('data-value').toLowerCase().includes(service.toLowerCase()));
+                if (targetOpt) {
+                    targetOpt.click();
                 }
             }
         }
     };
 
-    const closeModal = () => {
-        modal.classList.remove('open');
-        modal.setAttribute('aria-hidden', 'true');
-        if (status) status.textContent = '';
+    window.closeConsultationModal = (callback) => {
+        if (!window.isConsultationOpen) {
+            if (typeof callback === 'function') callback();
+            return;
+        }
+        window.isConsultationOpen = false;
+
+        // Fade out inquiry form and backdrop
+        gsap.to('.consultation-fullpage-inner', {
+            opacity: 0,
+            y: -16,
+            duration: 0.22,
+            ease: 'power2.in'
+        });
+
+        gsap.to(backdrop, {
+            opacity: 0,
+            duration: 0.32,
+            delay: 0.05,
+            ease: 'power2.inOut',
+            onComplete: () => {
+                modal.classList.remove('open');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('inquiry-form-active');
+                document.body.style.overflow = '';
+                closeAllDropdowns();
+                if (status) status.textContent = '';
+
+                // Restore page content of the current active view
+                const activeViewId = window.currentView || currentView || 'hero';
+                const activeViewEl = $(`#view-${activeViewId}`);
+                const elementsToRestore = [activeViewEl, '#shared-sculpture'];
+
+                gsap.to(elementsToRestore, {
+                    opacity: 1,
+                    scale: 1,
+                    duration: 0.38,
+                    ease: 'power2.out'
+                });
+
+                if (typeof callback === 'function') callback();
+            }
+        });
     };
 
-    if (openBtn) openBtn.addEventListener('click', () => window.openConsultationModal());
+    const closeModal = () => window.closeConsultationModal();
+
+    if (openBtn) openBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (window.isConsultationOpen) {
+            window.closeConsultationModal();
+        } else {
+            window.openConsultationModal();
+        }
+    });
     if (closeBtn) closeBtn.addEventListener('click', closeModal);
     if (backdrop) backdrop.addEventListener('click', closeModal);
 
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('open')) {
+        if (e.key === 'Escape' && window.isConsultationOpen) {
             closeModal();
         }
     });
@@ -779,9 +950,10 @@ function initConsultationModal() {
     if (form) {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
-            const name = $('#form-name').value;
-            status.textContent = `Thank you, ${name}. Request received. Our engineering lead will contact you promptly.`;
-            status.style.color = '#beea64';
+            const name = $('#form-name')?.value || 'Client';
+            status.textContent = `Thank you, ${name}. Your inquiry has been received. Our team will contact you shortly.`;
+            status.style.color = '#202c13';
+            status.style.fontWeight = '600';
             setTimeout(() => {
                 closeModal();
                 form.reset();
@@ -1131,6 +1303,10 @@ function initTankParticles() {
 
     let time = 0;
     function animate() {
+        if (window.isConsultationOpen) {
+            requestAnimationFrame(animate);
+            return;
+        }
         if (currentView === 'tank') {
             ctx.clearRect(0, 0, width, height);
             time += 0.02;
