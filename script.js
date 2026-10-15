@@ -662,7 +662,6 @@ function initNavigation() {
             e.preventDefault();
             const targetView = link.dataset.view;
             if (targetView) {
-                window.location.hash = targetView;
                 navigateToView(targetView);
             }
         });
@@ -670,7 +669,9 @@ function initNavigation() {
 
     window.addEventListener('hashchange', () => {
         const hash = window.location.hash.replace('#', '').toLowerCase();
-        if (hash && ['about', 'journey', 'movement', 'tank', 'hero'].includes(hash)) {
+        if (!hash || hash === 'hero' || hash === 'home') {
+            navigateToView('hero');
+        } else if (['about', 'journey', 'movement', 'tank'].includes(hash)) {
             navigateToView(hash);
         }
     });
@@ -679,6 +680,12 @@ function initNavigation() {
     const initialHash = window.location.hash.replace('#', '').toLowerCase();
     if (initialHash && ['about', 'journey', 'movement', 'tank'].includes(initialHash)) {
         setTimeout(() => navigateToView(initialHash, true), 80);
+    } else {
+        if (window.location.hash) {
+            try {
+                history.replaceState(null, '', window.location.pathname + window.location.search);
+            } catch (e) {}
+        }
     }
 }
 
@@ -691,6 +698,25 @@ function navigateToView(targetView, isImmediate = false) {
             link.classList.remove('active');
         }
     });
+
+    // Synchronize browser URL hash cleanly so address bar is never stuck on #tank
+    if (targetView === 'hero') {
+        if (window.location.hash) {
+            try {
+                history.replaceState(null, '', window.location.pathname + window.location.search);
+            } catch (e) {
+                window.location.hash = '';
+            }
+        }
+    } else {
+        if (window.location.hash !== '#' + targetView) {
+            try {
+                history.replaceState(null, '', '#' + targetView);
+            } catch (e) {
+                window.location.hash = targetView;
+            }
+        }
+    }
 
     // Toggle BOOK A CONSULTATION green fill on inner pages
     const btnConsultation = $('#btn-consultation');
@@ -708,6 +734,14 @@ function navigateToView(targetView, isImmediate = false) {
             navigateToView(targetView, isImmediate);
         }, targetView);
         return;
+    }
+    if (isAnimating && !isImmediate) {
+        if (currentView === 'tank' && targetView !== 'tank') {
+            gsap.killTweensOf(['.tank-title', '.tank-layer', '.tank-roof-frame', '#tank-focal-pattern', viewTank, bgParallax, bgPortalGlow, meshLeft, meshRight, sharedSculpture, btnBack]);
+            isAnimating = false;
+        } else {
+            return;
+        }
     }
     if (currentView === targetView && !isImmediate) {
         if (targetView === 'hero' && viewHero) {
@@ -1149,7 +1183,10 @@ function transitionToTank() {
 // VIEW TRANSITION: Tank → Target View (Reverse: Reseal Mesh)
 // -------------------------------------------------------
 function leaveTankTo(targetView = 'hero') {
-    if (isAnimating) return;
+    if (isAnimating) {
+        gsap.killTweensOf(['.tank-title', '.tank-layer', '.tank-roof-frame', '#tank-focal-pattern', viewTank, bgParallax, bgPortalGlow, meshLeft, meshRight, sharedSculpture, btnBack]);
+        isAnimating = false;
+    }
     isAnimating = true;
 
     // If a layer is open, collapse first, then transition
