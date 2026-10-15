@@ -683,10 +683,30 @@ function initNavigation() {
 }
 
 function navigateToView(targetView, isImmediate = false) {
+    // Update active nav-link highlighting immediately
+    $$('.nav-link').forEach(link => {
+        if (link.dataset.view === targetView) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
+    });
+
+    // Toggle BOOK A CONSULTATION green fill on inner pages
+    const btnConsultation = $('#btn-consultation');
+    if (btnConsultation) {
+        const innerPages = ['about', 'journey', 'movement', 'tank'];
+        if (innerPages.includes(targetView)) {
+            btnConsultation.classList.add('btn-consultation--active');
+        } else {
+            btnConsultation.classList.remove('btn-consultation--active');
+        }
+    }
+
     if (window.isConsultationOpen && window.closeConsultationModal) {
         window.closeConsultationModal(() => {
             navigateToView(targetView, isImmediate);
-        });
+        }, targetView);
         return;
     }
     if (currentView === targetView && !isImmediate) {
@@ -705,26 +725,6 @@ function navigateToView(targetView, isImmediate = false) {
             scale: 1,
             clearProps: 'opacity,scale'
         });
-    }
-
-    // Update active nav-link highlighting
-    $$('.nav-link').forEach(link => {
-        if (link.dataset.view === targetView) {
-            link.classList.add('active');
-        } else {
-            link.classList.remove('active');
-        }
-    });
-
-    // Toggle BOOK A CONSULTATION green fill on inner pages
-    const btnConsultation = $('#btn-consultation');
-    if (btnConsultation) {
-        const innerPages = ['about', 'journey', 'movement', 'tank'];
-        if (innerPages.includes(targetView)) {
-            btnConsultation.classList.add('btn-consultation--active');
-        } else {
-            btnConsultation.classList.remove('btn-consultation--active');
-        }
     }
 
     if (isImmediate) {
@@ -840,6 +840,12 @@ function switchBetweenStandardViews(fromView, toView) {
             if (toEl) {
                 toEl.classList.add('active');
             }
+            $$('.view').forEach(v => {
+                if (v.id !== `view-${toView}`) {
+                    v.classList.remove('active');
+                    gsap.set(v, { visibility: 'hidden', opacity: 0 });
+                }
+            });
             playAllVideos();
             currentView = toView;
             if (toView === 'about') updateAboutConnectorLines();
@@ -1451,12 +1457,26 @@ function initConsultationModal() {
         }
     };
 
-    window.closeConsultationModal = (callback) => {
+    window.closeConsultationModal = (callback, targetView) => {
         if (!window.isConsultationOpen) {
             if (typeof callback === 'function') callback();
             return;
         }
         window.isConsultationOpen = false;
+
+        const isNavigatingToOtherView = targetView && targetView !== currentView;
+        const prevViewEl = $(`#view-${currentView}`);
+
+        // If navigating to a different view, immediately deactivate and hide the previous view to prevent overlap
+        if (isNavigatingToOtherView && prevViewEl) {
+            prevViewEl.classList.remove('active');
+            gsap.killTweensOf(prevViewEl);
+            gsap.killTweensOf(prevViewEl.querySelectorAll('*'));
+            gsap.set(prevViewEl, { visibility: 'hidden', opacity: 0 });
+            if (currentView === 'hero' && typeof window.resetHeroSmoothScroll === 'function') {
+                window.resetHeroSmoothScroll();
+            }
+        }
 
         // Fade out inquiry form and backdrop
         gsap.to('.consultation-fullpage-inner', {
@@ -1468,8 +1488,8 @@ function initConsultationModal() {
 
         gsap.to(backdrop, {
             opacity: 0,
-            duration: 0.32,
-            delay: 0.05,
+            duration: 0.28,
+            delay: 0.04,
             ease: 'power2.inOut',
             onComplete: () => {
                 modal.classList.remove('open');
@@ -1478,27 +1498,41 @@ function initConsultationModal() {
                 document.body.style.overflow = '';
                 closeAllDropdowns();
                 if (status) status.textContent = '';
+                isAnimating = false;
 
-                // Restore page content
-                gsap.set(['#home-problem-section', '#hero-scroll-cue', '#problem-center-content'], {
-                    opacity: 1,
-                    scale: 1,
-                    clearProps: 'opacity,scale'
-                });
+                if (isNavigatingToOtherView) {
+                    // Moving to a new page: NEVER restore the previous view
+                    gsap.to('#shared-sculpture', {
+                        opacity: 1,
+                        scale: 1,
+                        duration: 0.35,
+                        ease: 'power2.out',
+                        clearProps: 'filter,opacity,scale'
+                    });
 
-                const activeViewId = window.currentView || currentView || 'hero';
-                const activeViewEl = $(`#view-${activeViewId}`);
-                const elementsToRestore = [activeViewEl, '#shared-sculpture'];
+                    if (typeof callback === 'function') callback();
+                } else {
+                    // Staying on the current view (e.g. clicking Close button, backdrop, Escape, or current nav link)
+                    gsap.set(['#home-problem-section', '#hero-scroll-cue', '#problem-center-content'], {
+                        opacity: 1,
+                        scale: 1,
+                        clearProps: 'opacity,scale'
+                    });
 
-                gsap.to(elementsToRestore, {
-                    opacity: 1,
-                    scale: 1,
-                    duration: 0.38,
-                    ease: 'power2.out',
-                    clearProps: 'filter,opacity,scale'
-                });
+                    const activeViewId = window.currentView || currentView || 'hero';
+                    const activeViewEl = $(`#view-${activeViewId}`);
+                    const elementsToRestore = [activeViewEl, '#shared-sculpture'];
 
-                if (typeof callback === 'function') callback();
+                    gsap.to(elementsToRestore, {
+                        opacity: 1,
+                        scale: 1,
+                        duration: 0.38,
+                        ease: 'power2.out',
+                        clearProps: 'filter,opacity,scale'
+                    });
+
+                    if (typeof callback === 'function') callback();
+                }
             }
         });
     };
